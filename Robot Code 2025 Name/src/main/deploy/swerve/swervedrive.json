@@ -2,7 +2,7 @@
   "imu": {
     "type": "adxrs450",
     "id": 0,
-    "canbus": "null"
+    "canbus": null
   },
   "invertedIMU": false,
   "modules": [
