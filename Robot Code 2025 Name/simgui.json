@@ -99,12 +99,14 @@
             0.0,
             255.0
           ],
+          "arrowSize": 0,
           "color": [
             224.99996948242188,
             0.0,
             255.0,
             255.0
-          ]
+          ],
+          "style": "Hidden"
         },
         "XModules": {
           "arrowColor": [
@@ -122,6 +124,7 @@
         "left": 150,
         "right": 2961,
         "top": 79,
+        "units": "feet",
         "width": 16.541748046875,
         "window": {
           "visible": true
