@@ -12,27 +12,33 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
  * Auto Balance command using a simple PID controller. Created by Team 3512
  * <a href="https://github.com/frc3512/Robot-2023/blob/main/src/main/java/frc3512/robot/commands/AutoBalance.java">...</a>
  */
+public class AutoBalanceCommand extends Command
+{
 
-public class AutoBalanceCommand extends Command {
-    private final SwerveSubsystem swerveSubsystem;
-    private final PIDController controller;
+  private final SwerveSubsystem swerveSubsystem;
+  private final PIDController   controller;
 
-    public AutoBalanceCommand(SwerveSubsystem swerveSubsystem){
-        this.swerveSubsystem = swerveSubsystem;
-        controller = new PIDController(1.0, 0.0, 0.0);
-        controller.setTolerance(1);
-        controller.setTolerance(0.0);
-        // Each subsystem used by the command must be passed into the
-        // addRequirements() method (which takes a varag of Subsystem)
-        addRequirements(this.swerveSubsystem);
-    }
+  public AutoBalanceCommand(SwerveSubsystem swerveSubsystem)
+  {
+    this.swerveSubsystem = swerveSubsystem;
+    controller = new PIDController(1.0, 0.0, 0.0);
+    controller.setTolerance(1);
+    controller.setSetpoint(0.0);
+    // each subsystem used by the command must be passed into the
+    // addRequirements() method (which takes a vararg of Subsystem)
+    addRequirements(this.swerveSubsystem);
+  }
 
-    @Override
-    public void initialize(){
+  /**
+   * The initial subroutine of a command.  Called once when the command is initially scheduled.
+   */
+  @Override
+  public void initialize()
+  {
 
-    }
+  }
 
-     /**
+  /**
    * The main body of a command.  Called repeatedly while the command is scheduled. (That is, it is called repeatedly
    * until {@link #isFinished()}) returns true.)
    */
@@ -78,4 +84,3 @@ public class AutoBalanceCommand extends Command {
     swerveSubsystem.lock();
   }
 }
-
