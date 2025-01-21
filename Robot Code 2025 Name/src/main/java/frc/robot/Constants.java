@@ -28,23 +28,25 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
-    //NEED TO CHANGE!!!!!!!!!!!!!
+    //NEED TO CHANGE!!!!!!!!!!!!! 🐼
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(24.25);
     // Distance between centers of right and left wheels on robot
     public static final double kWheelBase = Units.inchesToMeters(24.25);
     // Distance between front and back wheels on robot
+    //🐼
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
+    //🐼
     // Angular offsets of the modules relative to the chassis in radians
     public static final double kFrontChassisAngularOffset = -Math.PI / 2;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    // NEED TO CHANGE!!!!!!!!!!!!!!!!!
+    // NEED TO CHANGE!!!!!!!!!!!!!!!!! 🐼
     // SPARK MAX CAN IDs
     public static final int kFrontDrivingCanId = 1;    
     public static final int kRearLeftDrivingCanId = 6;
@@ -56,7 +58,7 @@ public final class Constants {
 
     public static final boolean kGyroReversed = true;
   }
-    //NEED TO CHANGE!!!!!!!!!!!!!
+    //NEED TO CHANGE!!!!!!!!!!!!!  🐼
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
