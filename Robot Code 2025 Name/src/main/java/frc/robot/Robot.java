@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj.Encoder;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to each mode, as
  * described in the TimedRobot documentation. If you change the name of this class or the package after creating this
@@ -23,6 +27,11 @@ public class Robot extends TimedRobot
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
+
+  private Encoder encoder0;
+  private Encoder encoder1;
+  private Encoder encoder2;
+  private Encoder encoder3;
 
   public Robot()
   {
@@ -43,6 +52,16 @@ public class Robot extends TimedRobot
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    encoder0 = new Encoder(0, 1);
+    encoder1 = new Encoder(2, 3);
+    encoder2 = new Encoder(4, 5);
+    encoder3 = new Encoder(6, 7);
+
+    double distancePerPulse = 0.01;
+    encoder0.setDistancePerPulse(distancePerPulse);
+    encoder1.setDistancePerPulse(distancePerPulse);
+    encoder2.setDistancePerPulse(distancePerPulse);
+    encoder3.setDistancePerPulse(distancePerPulse);
 
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
@@ -52,7 +71,7 @@ public class Robot extends TimedRobot
     {
       DriverStation.silenceJoystickConnectionWarning(true);
     }
-
+    CameraServer.startAutomaticCapture();
   }
 
   /**
@@ -70,6 +89,12 @@ public class Robot extends TimedRobot
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    SmartDashboard.putNumber("Encoder 0 Distance", encoder0.getDistance());
+    SmartDashboard.putNumber("Encoder 1 Distance", encoder1.getDistance());
+    SmartDashboard.putNumber("Encoder 2 Distance", encoder2.getDistance());
+    SmartDashboard.putNumber("Encoder 3 Distance", encoder3.getDistance());
+
   }
 
   /**
@@ -90,6 +115,7 @@ public class Robot extends TimedRobot
     {
       m_robotContainer.setMotorBrake(false);
       disabledTimer.stop();
+      disabledTimer.reset();
     }
   }
 
@@ -131,7 +157,6 @@ public class Robot extends TimedRobot
     {
       CommandScheduler.getInstance().cancelAll();
     }
-    m_robotContainer.setDriveMode();
   }
 
   /**
@@ -147,7 +172,6 @@ public class Robot extends TimedRobot
   {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.setDriveMode();
   }
 
   /**
