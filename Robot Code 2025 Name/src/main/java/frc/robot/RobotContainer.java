@@ -9,20 +9,28 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+import frc.robot.commands.ElevatorCommad;
+import frc.robot.commands.TestCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+//import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.TestSubsystem;
 
 public class RobotContainer {
     //Sets up camera
+    //Comment this out if you what to run the sim.
     private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -38,6 +46,10 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+
+    //Subsystems
+    //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    private final TestSubsystem testSubsystem = new TestSubsystem();
 
     public RobotContainer() {
         configureBindings();
@@ -71,6 +83,12 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        //BUTTONS!!!!!!!!!!!!!
+        //This is the test one
+        new Trigger(joystick.x()
+    
+        .whileTrue(new TestCommand(testSubsystem, 0.5)));
     }
 
     public Command getAutonomousCommand() {
