@@ -10,7 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -19,11 +18,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.ElevatorCommad;
+import frc.robot.commands.IntakeRotateCommand;
+import frc.robot.commands.SwitchCameraCommand;
 import frc.robot.commands.TestCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-//import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.IntakeRotateSubsystem;
 import frc.robot.subsystems.TestSubsystem;
 
 public class RobotContainer {
@@ -49,7 +51,11 @@ public class RobotContainer {
 
     //Subsystems
     //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
-    private final TestSubsystem testSubsystem = new TestSubsystem();
+    //private final TestSubsystem testSubsystem = new TestSubsystem();
+    private final IntakeRotateSubsystem intakeRotateSubsystem = new IntakeRotateSubsystem();
+    //Speeds
+    //private double elevatorSpeed = 0.3;
+    private double intakeRotatespeed = 0.1;
 
     public RobotContainer() {
         configureBindings();
@@ -86,9 +92,11 @@ public class RobotContainer {
 
         //BUTTONS!!!!!!!!!!!!!
         //This is the test one
-        new Trigger(joystick.x()
-    
-        .whileTrue(new TestCommand(testSubsystem, 0.5)));
+        //new Trigger(joystick.x().onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        new Trigger(joystick.x().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 3)));
+        new Trigger(joystick.y().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 1.5)));
+        new Trigger(joystick.button(6).onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 0)));
+        //new Trigger(joystick.x().whileTrue(new ElevatorCommad(elevatorSubsystem, 10)));
     }
 
     public Command getAutonomousCommand() {
