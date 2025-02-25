@@ -29,9 +29,7 @@ import frc.robot.subsystems.IntakeRotateSubsystem;
 import frc.robot.subsystems.TestSubsystem;
 
 public class RobotContainer {
-    //Sets up camera
-    //Comment this out if you what to run the sim.
-    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -50,12 +48,19 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystems
+    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
     //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
-    //private final TestSubsystem testSubsystem = new TestSubsystem();
-    private final IntakeRotateSubsystem intakeRotateSubsystem = new IntakeRotateSubsystem();
+    private final TestSubsystem testSubsystem = new TestSubsystem();
+    //private final IntakeRotateSubsystem intakeRotateSubsystem = new IntakeRotateSubsystem();
+
     //Speeds
-    //private double elevatorSpeed = 0.3;
+    private double elevatorSpeed = 0.5;
     private double intakeRotatespeed = 0.1;
+
+    //Elevator Positions
+    private int ePos1 = 0;
+    private int ePos2 = 150;
+    private int ePos3 = 250;
 
     public RobotContainer() {
         configureBindings();
@@ -91,12 +96,29 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         //BUTTONS!!!!!!!!!!!!!
-        //This is the test one
-        //new Trigger(joystick.x().onTrue(new SwitchCameraCommand(cameraSubsystem)));
-        new Trigger(joystick.x().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 3)));
-        new Trigger(joystick.y().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 1.5)));
-        new Trigger(joystick.button(6).onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 0)));
-        //new Trigger(joystick.x().whileTrue(new ElevatorCommad(elevatorSubsystem, 10)));
+        //Camera
+        new Trigger(joystick.button(6).onTrue(new SwitchCameraCommand(cameraSubsystem)));
+
+        //Elevator
+        //new Trigger(joystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos)));
+        //new Trigger(joystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2)));
+        //new Trigger(joystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3)));
+
+        // Should be able to get rid of soon
+        //IntakeRotate
+        /*new Trigger (joystick.y().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 0)));
+        new Trigger (joystick.x().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 1.5)));
+        new Trigger (joystick.button(6).onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 3)));
+        */
+
+        // Should be able to get rid of soon
+        //Test
+        //I have no idea what buttons these are need to test (example button(3), button(4))
+        //Will need to make a sheet or somthing after testing.
+        new Trigger(joystick.button(3).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos1)));
+        new Trigger(joystick.button(4).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos2)));
+        new Trigger(joystick.button(4).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos3)));
+
     }
 
     public Command getAutonomousCommand() {

@@ -1,50 +1,42 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeRotateSubsystem;
+import frc.robot.subsystems.TestSubsystem;
+
+
+/*
+ * I don't thing I will have to mess with this
+ */
 
 public class TestCommand extends InstantCommand {
-    private final ElevatorSubsystem elevatorSubsystem;
-    private final IntakeRotateSubsystem intakeRotateSubsystem;
+    private final TestSubsystem testSubsystem;
     private final double speed;
     private double desiredPos = 0;
 
-    public TestCommand(ElevatorSubsystem elevatorSubsystem, IntakeRotateSubsystem intakeRotateSubsystem, double speed) {
-        this.elevatorSubsystem = elevatorSubsystem;
-        this.intakeRotateSubsystem = intakeRotateSubsystem;
-        this.speed = speed;
-        addRequirements(elevatorSubsystem, intakeRotateSubsystem);
-    }
-
-    public TestCommand(ElevatorSubsystem elevatorSubsystem, IntakeRotateSubsystem intakeRotateSubsystem, double speed, double desiredPos){
-        this.elevatorSubsystem = elevatorSubsystem;
-        this.intakeRotateSubsystem = intakeRotateSubsystem;
+    public TestCommand(TestSubsystem testSubsystem, double speed, double desiredPos) {
+        this.testSubsystem = testSubsystem;
         this.speed = speed;
         this.desiredPos = desiredPos;
-        addRequirements(elevatorSubsystem, intakeRotateSubsystem); 
+        addRequirements(testSubsystem);
     }
 
     @Override
-    public void initialize(){
-        elevatorSubsystem.setElevatorSpeed(speed);
-        intakeRotateSubsystem.setRotateSpeed(speed);
+    public void execute() {
+        testSubsystem.goToPosition(speed, desiredPos);
     }
 
     @Override
-    public void execute(){
-        elevatorSubsystem.goToPosition(speed, desiredPos);
-        intakeRotateSubsystem.intakeToPos(desiredPos, speed);
+    public void initialize() {
+        testSubsystem.setTestSpeed(speed);
     }
 
     @Override
-    public void end(boolean interrupted){
-        elevatorSubsystem.stopElevator();
-        intakeRotateSubsystem.stopRotate();
+    public void end(boolean interrupted) {
+        testSubsystem.setTestSpeed(0);
     }
-    
+
     @Override
-    public boolean isFinished(){
-        return false; // Keep running until the button is released???
+    public boolean isFinished() {
+        return true; // or return false; depending on your logic
     }
 }

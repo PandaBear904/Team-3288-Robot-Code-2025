@@ -6,6 +6,12 @@ import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+
+/*
+ * Might switch this to the code in the 
+ * test subsystem but need to try it first
+ */
+
 public class ElevatorSubsystem extends SubsystemBase {
     //Set up the motors need in the subsystem
     private SparkFlex elevatorMotor = new SparkFlex(10, SparkFlex.MotorType.kBrushless); // Might need to change later
@@ -20,11 +26,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double currentPosition;
     private double cPos;
 
-    //Sets up the position for the elevator
+    //Sets up the positions for the elevator
     private int pos;
 
     // This is for the distance on that is exspected to be off
-    private final double offset = 0.05; 
+    private final double offset = 0.5; 
 
 
     public ElevatorSubsystem(){

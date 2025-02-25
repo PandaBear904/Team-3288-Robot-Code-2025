@@ -5,6 +5,11 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/*
+ * I what to get rid of this subsystem by
+ * adding it in to the elevator subsystem
+ */
+
 public class IntakeSpin extends SubsystemBase {
     SparkFlex intakeMotor = new SparkFlex(1, MotorType.kBrushless);
 
