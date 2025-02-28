@@ -1,63 +1,64 @@
 package frc.robot.subsystems;
-/*
- * THIS IS THE TEST SUBSYSTEM
- * 
- * I have been using this to test new part of the bot
- * Right now it is set up to hopefully run the elevator
- * and the intake rotation
- * 
- * Might need to the intake drop off
- */
 
-
-//All of the imports
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class TestSubsystem extends SubsystemBase {
-    //Sets up motors
-    private final SparkFlex test = new SparkFlex(10, MotorType.kBrushless);
-    private final SparkMax test2 = new SparkMax(11, MotorType.kBrushless);
 
-    //Encoders set up
+/*
+ * Might switch this to the code in the 
+ * test subsystem but need to try it first
+ */
+
+public class TestSubsystem extends SubsystemBase {
+    //Set up the motors need in the subsystem
+    private SparkFlex test = new SparkFlex(10, SparkFlex.MotorType.kBrushless); // Might need to change later
+    private SparkMax test2 = new SparkMax(11, SparkMax.MotorType.kBrushless);
+    private SparkFlex test3 = new SparkFlex(12, SparkFlex.MotorType.kBrushless);
+
+    //Get the encoder form the motor
     private final RelativeEncoder testEncoder = test.getEncoder();
     private final RelativeEncoder test2Encoder = test2.getEncoder();
-    private double testPosition;
-    private double test2Position;
+    private final RelativeEncoder test3Encoder = test3.getEncoder();
 
-    //Values
-    private double offset = 0.5;
+    private double targetPosition = 0;
+
+    private double currentPosition;
     private double cPos;
     private int pos;
 
-    //For Spark Max NEO 
-    //private final SparkMax NAME_HERE = new SparkMax(1, MotorType.kBrushless);
+    private final double offset = 0.5; 
+
+
     public TestSubsystem(){
-        testPosition = testEncoder.getPosition();
-        test2Position = test2Encoder.getPosition();
-        test.setInverted(false);
+        //Makes it so no movement happens on startup
+        targetPosition = testEncoder.getPosition();
+        test.setInverted(true);
         test2.setInverted(false);
+
     }
+
     @Override
     public void periodic(){
-        testPosition = testEncoder.getPosition();
-        test2Position = test2Encoder.getPosition();
-        SmartDashboard.putNumber("Test Encoder", testPosition);
-        SmartDashboard.putNumber("Test2 Encoder", test2Position);
-        SmartDashboard.putNumber("Position", pos);
+        //Put the encoder values on the smartdashboard
+        currentPosition = testEncoder.getPosition();
+        SmartDashboard.putNumber("Test Encoder", currentPosition);
+        SmartDashboard.putNumber("Test Target Position", targetPosition);
+        SmartDashboard.putNumber("Test Position", pos);
+        SmartDashboard.putNumber("Test2 Encoder", test2Encoder.getPosition());
+        SmartDashboard.putNumber("Test3 Encoder", test3Encoder.getPosition());
     }
 
     public void setTestSpeed(double speed){
-        test.set(speed);
-        test2.set(speed);
+        //test.set(speed);
+        //test2.set(speed);
+        //test3.set(speed);
     }
 
-    public void goToPosition(double speed, double desiredPos){
+    public void goToPosition(double speed, double desiredPos, double rotatePos, double onPos){
         double currentPos = testEncoder.getPosition();
         cPos = currentPos;
         if (Math.abs(currentPos - desiredPos) > offset) { // Add a tolerance
@@ -69,12 +70,12 @@ public class TestSubsystem extends SubsystemBase {
         } else {
             test.set(0); // Stop the motor once position is reached
             pos();
-            IntakeOn(speed);
+            intakeRotate(speed, rotatePos, onPos);
         }
-
     }
 
     public void pos(){
+        //Finds what position the elevator is in
         if (Math.abs(cPos - 250) <= offset) {
             pos = 1;
         } else if (Math.abs(cPos - 150) <= offset){
@@ -84,38 +85,42 @@ public class TestSubsystem extends SubsystemBase {
         }
     }
 
-    private void IntakeOn(double speed){
-        double currentPos = test2Encoder.getPosition();
-        double desiredPos = 1.5;
+    public void intakeRotate(double speed, double rotatePos, double onPos){
+        double currentPos = test3Encoder.getPosition();
         cPos = currentPos;
-        if (Math.abs(currentPos - desiredPos) > offset) { 
-            if (desiredPos > currentPos) {
+        if (Math.abs(currentPos - rotatePos) > offset) { // Add a tolerance
+            if (rotatePos > currentPos) {
+                test3.set(speed);
+            } else {
+                test3.set(-speed);
+            }
+        } else {
+            test3.set(0);
+            intakeOn(speed, onPos);
+        }
+    }
+
+    public void intakeOn(double speed, double onPos){
+        double currentPos = test2Encoder.getPosition();
+        cPos = currentPos;
+        if (Math.abs(currentPos - onPos) > offset) { // Add a tolerance
+            if (onPos > currentPos) {
                 test2.set(speed);
             } else {
                 test2.set(-speed);
             }
         } else {
-            test2.set(0); // Stop the motor once position is reached
-            reset2Encoder();
+            test2.set(0);
         }
     }
 
-    public void reset2Encoder(){
-        double currentPos = test2Position;
 
-        if (Math.abs(currentPos - 0) > offset){
-            if (0 > currentPos){
-                test2.set(0.3);
-            } else {
-                test2.set(-0.3);
-            }
-        } else {
-            test.set(0);
-        }
-    }
 
+    /*Stops the Motor from moving
+    hope we don't have to use this but it is here just in case
+    */
     public void stopTest(){
         test.set(0);
-        test2.set(0);
     }
+
 }

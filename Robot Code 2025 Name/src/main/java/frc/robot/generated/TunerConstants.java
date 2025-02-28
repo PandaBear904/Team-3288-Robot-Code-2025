@@ -10,6 +10,8 @@ import com.ctre.phoenix6.swerve.*;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.*;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.*;
@@ -129,7 +131,7 @@ public class TunerConstants {
     private static final int kFrontLeftDriveMotorId = 40;
     private static final int kFrontLeftSteerMotorId = 41;
     private static final int kFrontLeftEncoderId = 42;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.097412109375);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.87536);
     private static final boolean kFrontLeftSteerMotorInverted = false;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -281,6 +283,25 @@ public class TunerConstants {
                 drivetrainConstants, odometryUpdateFrequency,
                 odometryStandardDeviation, visionStandardDeviation, modules
             );
+        }
+
+    public Pose2d getPose() {
+        return getState().Pose; // Use CTRE’s built-in pose tracking
+        }
+
+    public void resetOdometry(Pose2d pose) {
+        super.resetPose(pose); // Reset odometry using CTRE method
+        }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return getState().Speeds; // Retrieve speeds from CTRE's swerve state
+        }   
+
+    public void drive(ChassisSpeeds speeds) {
+        setControl(new SwerveRequest.FieldCentric()
+            .withVelocityX(speeds.vxMetersPerSecond)
+                .withVelocityY(speeds.vyMetersPerSecond)
+            .withRotationalRate(speeds.omegaRadiansPerSecond));
         }
     }
 }

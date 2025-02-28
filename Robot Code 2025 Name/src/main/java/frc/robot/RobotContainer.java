@@ -6,26 +6,29 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.ElevatorCommad;
-import frc.robot.commands.IntakeRotateCommand;
 import frc.robot.commands.SwitchCameraCommand;
 import frc.robot.commands.TestCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.IntakeRotateSubsystem;
 import frc.robot.subsystems.TestSubsystem;
 
 public class RobotContainer {
@@ -51,10 +54,9 @@ public class RobotContainer {
     private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
     //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final TestSubsystem testSubsystem = new TestSubsystem();
-    //private final IntakeRotateSubsystem intakeRotateSubsystem = new IntakeRotateSubsystem();
 
     //Speeds
-    private double elevatorSpeed = 0.5;
+    private double elevatorSpeed = 0.1;
     private double intakeRotatespeed = 0.1;
 
     //Elevator Positions
@@ -62,7 +64,50 @@ public class RobotContainer {
     private int ePos2 = 150;
     private int ePos3 = 250;
 
+    //Intake Positions
+    private double intakeOn = 180;
+    private double intakeOff = 0;
+
+    //Intkae Rotate Positions
+    private double intakeRotatePos1 = 0;
+    private double intakeRotatePos2 = 13;
+    private double intakeRotatePos3 = 84;
+    private double intakeRotatePos4 = 99;
+
+
     public RobotContainer() {
+        // Define PID constants
+    PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
+    PIDConstants rotationConstants = new PIDConstants(5.0, 0.0, 0.0);
+
+// Configure the AutoBuilder
+    RobotConfig config = null;
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
+
+    // Configure AutoBuilder last
+    AutoBuilder.configure(
+        drivetrain::getPose, // ✅ Fixed
+        drivetrain::resetOdometry, // ✅ Fixed
+        drivetrain::getChassisSpeeds, // ✅ Fixed
+        drivetrain::drive, // ✅ Fixed
+        new PPHolonomicDriveController(
+                new PIDConstants(5.0, 0.0, 0.0), 
+                new PIDConstants(5.0, 0.0, 0.0)
+        ),
+        config,
+        () -> {
+            var alliance = DriverStation.getAlliance();
+            return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+        },
+        drivetrain, cameraSubsystem, testSubsystem
+);
+
+
         configureBindings();
     }
 
@@ -113,15 +158,23 @@ public class RobotContainer {
 
         // Should be able to get rid of soon
         //Test
-        //I have no idea what buttons these are need to test (example button(3), button(4))
-        //Will need to make a sheet or somthing after testing.
-        new Trigger(joystick.button(3).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos1)));
-        new Trigger(joystick.button(4).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos2)));
-        new Trigger(joystick.button(4).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos3)));
-
+        /*
+        new Trigger(joystick.x().onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos1, intakeRotatePos1, intakeOff)));
+        new Trigger(joystick.y().onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos2, intakeRotatePos2, intakeOn)));
+        new Trigger(joystick.button(6).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos3, intakeRotatePos3, intakeOn)));
+        new Trigger(joystick.button(5).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos3, intakeRotatePos4, intakeOff)));
+        */
     }
+
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        try {
+            PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
+            return AutoBuilder.followPath(path);
+        } catch (Exception e) {
+            DriverStation.reportError("Error loading path: " + e.getMessage(), e.getStackTrace());
+            return Commands.print("Failed to load path");
+        }
     }
+    
 }
