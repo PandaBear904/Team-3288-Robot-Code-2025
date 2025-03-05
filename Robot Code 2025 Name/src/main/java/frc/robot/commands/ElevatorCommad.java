@@ -7,17 +7,22 @@ public class ElevatorCommad extends InstantCommand {
     private final ElevatorSubsystem elevatorSubsystem;
     private final double speed;
     private double desiredPos = 0;
-
-    public ElevatorCommad(ElevatorSubsystem elevatorSubsystem, double speed) {
-        this.elevatorSubsystem = elevatorSubsystem;
-        this.speed = speed;
-        addRequirements(elevatorSubsystem);
-    }
+    private double rotatePos = 0;
+    private double onPos = 0;
 
     public ElevatorCommad(ElevatorSubsystem elevatorSubsystem, double speed, double desiredPos){
         this.elevatorSubsystem = elevatorSubsystem;
         this.speed = speed;
         this.desiredPos = desiredPos;
+        addRequirements(elevatorSubsystem); 
+    }
+
+    public ElevatorCommad(ElevatorSubsystem elevatorSubsystem, double speed, double desiredPos, double rotatePos, double onPos){
+        this.elevatorSubsystem = elevatorSubsystem;
+        this.speed = speed;
+        this.desiredPos = desiredPos;
+        this.rotatePos = rotatePos;
+        this.onPos = onPos;
         addRequirements(elevatorSubsystem); 
     }
 
@@ -28,7 +33,7 @@ public class ElevatorCommad extends InstantCommand {
 
     @Override
     public void execute(){
-        elevatorSubsystem.goToPosition(speed, desiredPos);
+        elevatorSubsystem.goToPosition(speed, desiredPos, rotatePos, onPos);
     }
 
     @Override

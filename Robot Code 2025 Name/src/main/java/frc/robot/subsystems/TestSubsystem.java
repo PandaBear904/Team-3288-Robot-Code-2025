@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class TestSubsystem extends SubsystemBase {
     //Set up the motors need in the subsystem
     private SparkFlex test = new SparkFlex(10, SparkFlex.MotorType.kBrushless); // Might need to change later
-    private SparkMax test2 = new SparkMax(11, SparkMax.MotorType.kBrushless);
+    private SparkFlex test2 = new SparkFlex(11, SparkFlex.MotorType.kBrushless);
     private SparkFlex test3 = new SparkFlex(12, SparkFlex.MotorType.kBrushless);
 
     //Get the encoder form the motor
@@ -38,7 +37,7 @@ public class TestSubsystem extends SubsystemBase {
         targetPosition = testEncoder.getPosition();
         test.setInverted(true);
         test2.setInverted(false);
-
+        test3.setInverted(false);
     }
 
     @Override
@@ -121,6 +120,8 @@ public class TestSubsystem extends SubsystemBase {
     */
     public void stopTest(){
         test.set(0);
+        test2.set(0);
+        test3.set(0);
     }
 
 }

@@ -52,8 +52,8 @@ public class RobotContainer {
 
     //Subsystems
     private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
-    //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
-    private final TestSubsystem testSubsystem = new TestSubsystem();
+    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    //private final TestSubsystem testSubsystem = new TestSubsystem();
 
     //Speeds
     private double elevatorSpeed = 0.1;
@@ -76,25 +76,22 @@ public class RobotContainer {
 
 
     public RobotContainer() {
-        // Define PID constants
-    PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
-    PIDConstants rotationConstants = new PIDConstants(5.0, 0.0, 0.0);
 
-// Configure the AutoBuilder
+    // Configure the AutoBuilder
     RobotConfig config = null;
-    try{
-      config = RobotConfig.fromGUISettings();
+    try {
+        config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
+        // Handle exception as needed
+        e.printStackTrace();
     }
 
-    // Configure AutoBuilder last
+    // Configure AutoBuilder last  
     AutoBuilder.configure(
-        drivetrain::getPose, // ✅ Fixed
-        drivetrain::resetOdometry, // ✅ Fixed
-        drivetrain::getChassisSpeeds, // ✅ Fixed
-        drivetrain::drive, // ✅ Fixed
+        drivetrain::getPose, 
+        drivetrain::resetOdometry, 
+        drivetrain::getChassisSpeeds, 
+        drivetrain::drive, 
         new PPHolonomicDriveController(
                 new PIDConstants(5.0, 0.0, 0.0), 
                 new PIDConstants(5.0, 0.0, 0.0)
@@ -104,9 +101,8 @@ public class RobotContainer {
             var alliance = DriverStation.getAlliance();
             return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
         },
-        drivetrain, cameraSubsystem, testSubsystem
-);
-
+        drivetrain, cameraSubsystem, elevatorSubsystem
+        );
 
         configureBindings();
     }
@@ -149,12 +145,6 @@ public class RobotContainer {
         //new Trigger(joystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2)));
         //new Trigger(joystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3)));
 
-        // Should be able to get rid of soon
-        //IntakeRotate
-        /*new Trigger (joystick.y().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 0)));
-        new Trigger (joystick.x().onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 1.5)));
-        new Trigger (joystick.button(6).onTrue(new IntakeRotateCommand(intakeRotateSubsystem, intakeRotatespeed, 3)));
-        */
 
         // Should be able to get rid of soon
         //Test
