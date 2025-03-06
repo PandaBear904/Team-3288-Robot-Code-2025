@@ -35,9 +35,6 @@ public class TestSubsystem extends SubsystemBase {
     public TestSubsystem(){
         //Makes it so no movement happens on startup
         targetPosition = testEncoder.getPosition();
-        test.setInverted(true);
-        test2.setInverted(false);
-        test3.setInverted(false);
     }
 
     @Override

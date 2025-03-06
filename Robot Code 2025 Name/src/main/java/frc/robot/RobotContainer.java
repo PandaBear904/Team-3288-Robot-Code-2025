@@ -6,7 +6,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-
+//PathPlanner Stuff
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -14,6 +14,10 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import java.util.List;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -22,16 +26,24 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+
+//Imports for subsystem/commands
 import frc.robot.commands.ElevatorCommad;
 import frc.robot.commands.SwitchCameraCommand;
-import frc.robot.commands.TestCommand;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CameraSubsystem;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.TestSubsystem;
+import frc.robot.commands.TestCommand;
+
+
+
 
 public class RobotContainer {
+
+    private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -48,10 +60,12 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
+    private final CommandXboxController opJoystick = new CommandXboxController(1);
+
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystems
-    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+    //private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     //private final TestSubsystem testSubsystem = new TestSubsystem();
 
@@ -60,9 +74,9 @@ public class RobotContainer {
     private double intakeRotatespeed = 0.1;
 
     //Elevator Positions
-    private int ePos1 = 0;
-    private int ePos2 = 150;
-    private int ePos3 = 250;
+    private int elevatorPos1 = 0;
+    private int elevatorPos2 = 150;
+    private int elevatorPos3 = 250;
 
     //Intake Positions
     private double intakeOn = 180;
@@ -74,6 +88,7 @@ public class RobotContainer {
     private double intakeRotatePos3 = 84;
     private double intakeRotatePos4 = 99;
 
+    boolean isCompetition = true;
 
     public RobotContainer() {
 
@@ -101,10 +116,12 @@ public class RobotContainer {
             var alliance = DriverStation.getAlliance();
             return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
         },
-        drivetrain, cameraSubsystem, elevatorSubsystem
+        drivetrain, elevatorSubsystem //,cameraSubsystem
         );
 
         configureBindings();
+        
+        configureAutoChooser();
     }
 
     private void configureBindings() {
@@ -138,13 +155,24 @@ public class RobotContainer {
 
         //BUTTONS!!!!!!!!!!!!!
         //Camera
-        new Trigger(joystick.button(6).onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        //new Trigger(joystick.button(6).onTrue(new SwitchCameraCommand(cameraSubsystem)));
 
         //Elevator
-        //new Trigger(joystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos)));
-        //new Trigger(joystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2)));
-        //new Trigger(joystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3)));
+        //With OP controll
+        new Trigger(opJoystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos1, intakeRotatePos1, intakeOff)));
+        new Trigger(opJoystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2, intakeRotatePos2, intakeOn)));
+        new Trigger(opJoystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
+        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos4, intakeOff)));
+        new Trigger(opJoystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
 
+        //With Driver controll
+        /*
+        new Trigger(joystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos1, intakeRotatePos1, intakeOff)));
+        new Trigger(joystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2, intakeRotatePos2, intakeOn)));
+        new Trigger(joystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
+        new Trigger(joystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos4, intakeOff)));
+        new Trigger(joystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
+        */
 
         // Should be able to get rid of soon
         //Test
@@ -157,14 +185,22 @@ public class RobotContainer {
     }
 
 
-    public Command getAutonomousCommand() {
-        try {
-            PathPlannerPath path = PathPlannerPath.fromPathFile("TestPath");
-            return AutoBuilder.followPath(path);
-        } catch (Exception e) {
-            DriverStation.reportError("Error loading path: " + e.getMessage(), e.getStackTrace());
-            return Commands.print("Failed to load path");
-        }
+    private void configureAutoChooser() {
+        autoChooser = new SendableChooser<>();
+
+        // Add a default auto selection
+        autoChooser.setDefaultOption("New Auto", new PathPlannerAuto("New Auto"));
+        
+        // Manually add a specific path
+        autoChooser.addOption("test Auto", new PathPlannerAuto("test Auto"));
+
+        // Optionally add more paths
+        autoChooser.addOption("Comp Auto", new PathPlannerAuto("comp Auto"));
+        
+        SmartDashboard.putData("Auto Chooser", autoChooser);
     }
-    
+
+    public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
+    }
 }
