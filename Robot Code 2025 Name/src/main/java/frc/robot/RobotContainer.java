@@ -13,9 +13,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import java.util.List;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,7 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -65,18 +62,19 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystems
-    //private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     //private final TestSubsystem testSubsystem = new TestSubsystem();
 
     //Speeds
-    private double elevatorSpeed = 0.1;
+    private double elevatorSpeed = 0.55;
     private double intakeRotatespeed = 0.1;
 
     //Elevator Positions
     private int elevatorPos1 = 0;
-    private int elevatorPos2 = 150;
-    private int elevatorPos3 = 250;
+    private int elevatorPos2 = 4450; //125
+    private int elevatorPos3 = 6600; //175
+    private int elevatorPos4 = 7500; // 285
 
     //Intake Positions
     private double intakeOn = 180;
@@ -116,11 +114,10 @@ public class RobotContainer {
             var alliance = DriverStation.getAlliance();
             return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
         },
-        drivetrain, elevatorSubsystem //,cameraSubsystem
+        drivetrain, elevatorSubsystem ,cameraSubsystem
         );
 
         configureBindings();
-        
         configureAutoChooser();
     }
 
@@ -155,15 +152,17 @@ public class RobotContainer {
 
         //BUTTONS!!!!!!!!!!!!!
         //Camera
-        //new Trigger(joystick.button(6).onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        new Trigger(opJoystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
 
         //Elevator
         //With OP controll
+        
         new Trigger(opJoystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos1, intakeRotatePos1, intakeOff)));
         new Trigger(opJoystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2, intakeRotatePos2, intakeOn)));
         new Trigger(opJoystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
-        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos4, intakeOff)));
+        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos4, intakeRotatePos4, intakeOff)));
         new Trigger(opJoystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
+        
 
         //With Driver controll
         /*

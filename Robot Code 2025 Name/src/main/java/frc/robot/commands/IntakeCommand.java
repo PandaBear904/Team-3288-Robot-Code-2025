@@ -17,6 +17,6 @@ public class IntakeCommand extends InstantCommand {
 
     @Override
     public void execute(){
-        elevatorSubsystem.intakeOn(speed, desiredPos);
+        //elevatorSubsystem.intakeOn(speed, desiredPos);
     }
 }

@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkFlex;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.Encoder;
 
 
 /*
@@ -15,40 +16,45 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class ElevatorSubsystem extends SubsystemBase {
     //Set up the motors need in the subsystem
     private SparkFlex elevator = new SparkFlex(10, SparkFlex.MotorType.kBrushless);
-    private SparkFlex intakeOn = new SparkFlex(11, SparkFlex.MotorType.kBrushless);
-    private SparkFlex intakeRotate = new SparkFlex(12, SparkFlex.MotorType.kBrushless);
+    //private SparkFlex intakeOn = new SparkFlex(11, SparkFlex.MotorType.kBrushless);
+    //private SparkFlex intakeRotate = new SparkFlex(12, SparkFlex.MotorType.kBrushless);
 
     //Get the encoder form the motor
     private final RelativeEncoder elevatorEncoder = elevator.getEncoder();
-    private final RelativeEncoder intakeOnEncoder = intakeOn.getEncoder();
-    private final RelativeEncoder intakeRotateEncoder = intakeRotate.getEncoder();
+    //private final RelativeEncoder intakeOnEncoder = intakeOn.getEncoder();
+    //private final RelativeEncoder intakeRotateEncoder = intakeRotate.getEncoder();
+    private final Encoder throughBore = new Encoder(0, 1);
 
     private double targetPosition = 0;
 
     private double currentPosition;
+    private double elevatorCurrentPosition;
     private double cPos;
     private int pos;
 
-    private final double offset = 0.5; 
+    private final double offset = 10; 
 
 
     public ElevatorSubsystem(){
         //Makes it so no movement happens on startup
-        targetPosition = elevatorEncoder.getPosition();
+        targetPosition = throughBore.get();
         elevator.setInverted(true);
-        intakeOn.setInverted(false);
-        intakeRotate.setInverted(false);
+        //intakeOn.setInverted(false);
+        //intakeRotate.setInverted(false);
     }
 
     @Override
     public void periodic(){
         //Put the encoder values on the smartdashboard
-        currentPosition = elevatorEncoder.getPosition();
-        SmartDashboard.putNumber("elevator Encoder", currentPosition);
-        SmartDashboard.putNumber("elevator Target Position", targetPosition);
-        SmartDashboard.putNumber("elevator Position", pos);
-        SmartDashboard.putNumber("intakeOn Encoder", intakeOnEncoder.getPosition());
-        SmartDashboard.putNumber("intakeRotate Encoder", intakeRotateEncoder.getPosition());
+        currentPosition = throughBore.get();
+        elevatorCurrentPosition = elevatorEncoder.getPosition();
+        SmartDashboard.putNumber("Elevator Encoder", elevatorCurrentPosition);
+        SmartDashboard.putNumber("Through Bore Encoder", currentPosition);
+        SmartDashboard.putNumber("Elevator Target Position", targetPosition);
+        SmartDashboard.putNumber("Elevator Position", pos);
+        SmartDashboard.putNumber("Through Bore", throughBore.get());
+        //SmartDashboard.putNumber("intakeOn Encoder", intakeOnEncoder.getPosition());
+        //SmartDashboard.putNumber("intakeRotate Encoder", intakeRotateEncoder.getPosition());
     }
 
     public void setElevatorSpeed(double speed){
@@ -58,7 +64,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void goToPosition(double speed, double desiredPos, double rotatePos, double onPos){
-        double currentPos = elevatorEncoder.getPosition();
+        double currentPos = throughBore.get();
         cPos = currentPos;
         if (Math.abs(currentPos - desiredPos) > offset) { // Add a tolerance
             if (desiredPos > currentPos) {
@@ -69,7 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else {
             elevator.set(0); // Stop the motor once position is reached
             pos();
-            intakeRotate(speed, rotatePos, onPos);
+            //intakeRotate(speed, rotatePos, onPos);
         }
     }
 
@@ -84,7 +90,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    public void intakeRotate(double speed, double rotatePos, double onPos){
+    /*public void intakeRotate(double speed, double rotatePos, double onPos){
         double currentPos = intakeRotateEncoder.getPosition();
         cPos = currentPos;
         if (Math.abs(currentPos - rotatePos) > offset) { 
@@ -112,8 +118,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             intakeOn.set(0);
         }
     }
-
-
+    */
 
     /*
     *Stops the Motor from moving
@@ -121,8 +126,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     */
     public void stopElevator(){
         elevator.set(0);
-        intakeOn.set(0);
-        intakeRotate.set(0);
+        //intakeOn.set(0);
+        //intakeRotate.set(0);
     }
 
 }
