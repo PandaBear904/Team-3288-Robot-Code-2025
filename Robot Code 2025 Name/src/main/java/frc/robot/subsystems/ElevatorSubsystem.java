@@ -89,8 +89,8 @@ public class ElevatorSubsystem extends SubsystemBase {
             pos = 3;
         }
     }
-
-    /*public void intakeRotate(double speed, double rotatePos, double onPos){
+    /*
+    public void intakeRotate(double speed, double rotatePos, double onPos){
         double currentPos = intakeRotateEncoder.getPosition();
         cPos = currentPos;
         if (Math.abs(currentPos - rotatePos) > offset) { 

@@ -16,32 +16,27 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+//Stuff
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-
 //Imports for subsystem/commands
 import frc.robot.commands.ElevatorCommad;
 import frc.robot.commands.SwitchCameraCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CameraSubsystem;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.subsystems.ClimbSusbsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.TestSubsystem;
-import frc.robot.commands.TestCommand;
-
-
-
+import frc.robot.commands.ClimbCommand;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
-
+    //For the auto chooser
     private SendableChooser<Command> autoChooser = new SendableChooser<>();
-
 
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -62,19 +57,19 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystems
-    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+    //private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
     private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
-    //private final TestSubsystem testSubsystem = new TestSubsystem();
+    private final ClimbSusbsystem climbSusbsystem = new ClimbSusbsystem();
 
     //Speeds
     private double elevatorSpeed = 0.55;
     private double intakeRotatespeed = 0.1;
 
     //Elevator Positions
-    private int elevatorPos1 = 0;
-    private int elevatorPos2 = 4450; //125
-    private int elevatorPos3 = 6600; //175
-    private int elevatorPos4 = 7500; // 285
+    private int elevatorPos1 = 0;      // This are the # tested on 3/8/2035 These were with out the intake working
+    private int elevatorPos2 = 4450; // 4450 
+    private int elevatorPos3 = 6600; // 6600
+    private int elevatorPos4 = 7700; // 7700
 
     //Intake Positions
     private double intakeOn = 180;
@@ -85,6 +80,9 @@ public class RobotContainer {
     private double intakeRotatePos2 = 13;
     private double intakeRotatePos3 = 84;
     private double intakeRotatePos4 = 99;
+
+    //Climb
+    private double climbSpeed = 0.7;
 
     boolean isCompetition = true;
 
@@ -114,7 +112,7 @@ public class RobotContainer {
             var alliance = DriverStation.getAlliance();
             return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
         },
-        drivetrain, elevatorSubsystem ,cameraSubsystem
+        drivetrain, elevatorSubsystem, climbSusbsystem //,cameraSubsystem
         );
 
         configureBindings();
@@ -152,7 +150,7 @@ public class RobotContainer {
 
         //BUTTONS!!!!!!!!!!!!!
         //Camera
-        new Trigger(opJoystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        //new Trigger(opJoystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
 
         //Elevator
         //With OP controll
@@ -162,6 +160,8 @@ public class RobotContainer {
         new Trigger(opJoystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
         new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos4, intakeRotatePos4, intakeOff)));
         new Trigger(opJoystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
+
+        new Trigger(opJoystick.button(7).onTrue(new ClimbCommand(climbSusbsystem, climbSpeed)));
         
 
         //With Driver controll
