@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj.Encoder;
 public class ElevatorSubsystem extends SubsystemBase {
     //Set up the motors need in the subsystem
     private SparkFlex elevator = new SparkFlex(10, SparkFlex.MotorType.kBrushless);
-    //private SparkFlex intakeOn = new SparkFlex(11, SparkFlex.MotorType.kBrushless);
-    //private SparkFlex intakeRotate = new SparkFlex(12, SparkFlex.MotorType.kBrushless);
+    private SparkFlex intakeOn = new SparkFlex(11, SparkFlex.MotorType.kBrushless);
+    private SparkFlex intakeRotate = new SparkFlex(12, SparkFlex.MotorType.kBrushless);
 
     //Get the encoder form the motor
     private final RelativeEncoder elevatorEncoder = elevator.getEncoder();
-    //private final RelativeEncoder intakeOnEncoder = intakeOn.getEncoder();
-    //private final RelativeEncoder intakeRotateEncoder = intakeRotate.getEncoder();
+    private final RelativeEncoder intakeOnEncoder = intakeOn.getEncoder();
+    private final RelativeEncoder intakeRotateEncoder = intakeRotate.getEncoder();
     private final Encoder throughBore = new Encoder(0, 1);
 
     private double targetPosition = 0;
@@ -32,15 +32,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double cPos;
     private int pos;
 
-    private final double offset = 10; 
+    private final double offset = 6; 
 
 
     public ElevatorSubsystem(){
         //Makes it so no movement happens on startup
         targetPosition = throughBore.get();
         elevator.setInverted(true);
-        //intakeOn.setInverted(false);
-        //intakeRotate.setInverted(false);
+        intakeOn.setInverted(false);
+        intakeRotate.setInverted(false);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Target Position", targetPosition);
         SmartDashboard.putNumber("Elevator Position", pos);
         SmartDashboard.putNumber("Through Bore", throughBore.get());
-        //SmartDashboard.putNumber("intakeOn Encoder", intakeOnEncoder.getPosition());
-        //SmartDashboard.putNumber("intakeRotate Encoder", intakeRotateEncoder.getPosition());
+        SmartDashboard.putNumber("intakeOn Encoder", intakeOnEncoder.getPosition());
+        SmartDashboard.putNumber("intakeRotate Encoder", intakeRotateEncoder.getPosition());
     }
 
     public void setElevatorSpeed(double speed){
@@ -75,7 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         } else {
             elevator.set(0); // Stop the motor once position is reached
             pos();
-            //intakeRotate(speed, rotatePos, onPos);
+            intakeRotate(speed, rotatePos, onPos);
         }
     }
 
@@ -89,8 +89,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             pos = 3;
         }
     }
-    /*
+    
     public void intakeRotate(double speed, double rotatePos, double onPos){
+        speed = 0.1;
         double currentPos = intakeRotateEncoder.getPosition();
         cPos = currentPos;
         if (Math.abs(currentPos - rotatePos) > offset) { 
@@ -106,6 +107,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void intakeOn(double speed, double onPos){
+        speed = 0.3;
         double currentPos = intakeOnEncoder.getPosition();
         cPos = currentPos;
         if (Math.abs(currentPos - onPos) > offset) { 
@@ -118,7 +120,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             intakeOn.set(0);
         }
     }
-    */
+    
 
     /*
     *Stops the Motor from moving
@@ -126,8 +128,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     */
     public void stopElevator(){
         elevator.set(0);
-        //intakeOn.set(0);
-        //intakeRotate.set(0);
+        intakeOn.set(0);
+        intakeRotate.set(0);
     }
 
 }

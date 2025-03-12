@@ -62,8 +62,8 @@ public class RobotContainer {
     private final ClimbSusbsystem climbSusbsystem = new ClimbSusbsystem();
 
     //Speeds
-    private double elevatorSpeed = 0.55;
-    private double intakeRotatespeed = 0.1;
+    private double elevatorSpeed = 0.4;
+    private double intakeRotatespeed = 0.16;
 
     //Elevator Positions
     private int elevatorPos1 = 0;      // This are the # tested on 3/8/2035 These were with out the intake working
@@ -72,17 +72,17 @@ public class RobotContainer {
     private int elevatorPos4 = 7700; // 7700
 
     //Intake Positions
-    private double intakeOn = 180;
+    private double intakeOn = 30;
     private double intakeOff = 0;
 
     //Intkae Rotate Positions
     private double intakeRotatePos1 = 0;
-    private double intakeRotatePos2 = 13;
-    private double intakeRotatePos3 = 84;
-    private double intakeRotatePos4 = 99;
+    private double intakeRotatePos2 = 55;
+    private double intakeRotatePos3 = 55;
+    private double intakeRotatePos4 = 55;
 
     //Climb
-    private double climbSpeed = 0.7;
+    private double climbSpeed = 0.5;
 
     boolean isCompetition = true;
 
@@ -151,6 +151,10 @@ public class RobotContainer {
         //BUTTONS!!!!!!!!!!!!!
         //Camera
         //new Trigger(opJoystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        
+        //Climb
+        new Trigger(joystick.a()).whileTrue(new ClimbCommand(climbSusbsystem, climbSpeed));
+        new Trigger(joystick.b()).whileTrue(new ClimbCommand(climbSusbsystem, -climbSpeed));
 
         //Elevator
         //With OP controll
@@ -158,11 +162,9 @@ public class RobotContainer {
         new Trigger(opJoystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos1, intakeRotatePos1, intakeOff)));
         new Trigger(opJoystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2, intakeRotatePos2, intakeOn)));
         new Trigger(opJoystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
-        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos4, intakeRotatePos4, intakeOff)));
-        new Trigger(opJoystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
+        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos4, intakeRotatePos4, intakeOn)));
+        //new Trigger(opJoystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
 
-        new Trigger(opJoystick.button(7).onTrue(new ClimbCommand(climbSusbsystem, climbSpeed)));
-        
 
         //With Driver controll
         /*
@@ -171,15 +173,6 @@ public class RobotContainer {
         new Trigger(joystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
         new Trigger(joystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos4, intakeOff)));
         new Trigger(joystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
-        */
-
-        // Should be able to get rid of soon
-        //Test
-        /*
-        new Trigger(joystick.x().onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos1, intakeRotatePos1, intakeOff)));
-        new Trigger(joystick.y().onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos2, intakeRotatePos2, intakeOn)));
-        new Trigger(joystick.button(6).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos3, intakeRotatePos3, intakeOn)));
-        new Trigger(joystick.button(5).onTrue(new TestCommand(testSubsystem, elevatorSpeed, ePos3, intakeRotatePos4, intakeOff)));
         */
     }
 

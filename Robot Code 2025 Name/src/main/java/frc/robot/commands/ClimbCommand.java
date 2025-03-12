@@ -1,9 +1,9 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ClimbSusbsystem;
 
-public class ClimbCommand extends InstantCommand {
+public class ClimbCommand extends Command {
     private final ClimbSusbsystem climbSusbsystem;
     private final double speed;
 
