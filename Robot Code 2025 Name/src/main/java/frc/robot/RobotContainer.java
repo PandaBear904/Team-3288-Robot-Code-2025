@@ -57,32 +57,32 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystems
-    //private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
-    private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+    //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final ClimbSusbsystem climbSusbsystem = new ClimbSusbsystem();
 
     //Speeds
-    private double elevatorSpeed = 0.4;
-    private double intakeRotatespeed = 0.16;
+    private double elevatorSpeed = 1;
 
     //Elevator Positions
-    private int elevatorPos1 = 0;      // This are the # tested on 3/8/2035 These were with out the intake working
+    private int elevatorPos1 = 0;    // This are the # tested on 3/8/2035 These were with out the intake working
     private int elevatorPos2 = 4450; // 4450 
     private int elevatorPos3 = 6600; // 6600
     private int elevatorPos4 = 7700; // 7700
+    private int elevatorPos5 = 1000;
+
 
     //Intake Positions
-    private double intakeOn = 30;
+    private double intakeOn = 120;
     private double intakeOff = 0;
 
-    //Intkae Rotate Positions
-    private double intakeRotatePos1 = 0;
+    //Intake Rotate Positions
+    private double intakeRotatePos1 = 3;
     private double intakeRotatePos2 = 55;
-    private double intakeRotatePos3 = 55;
-    private double intakeRotatePos4 = 55;
+    private int intakePos = 50;
 
     //Climb
-    private double climbSpeed = 0.5;
+    private double climbSpeed = 0.7;
 
     boolean isCompetition = true;
 
@@ -112,7 +112,7 @@ public class RobotContainer {
             var alliance = DriverStation.getAlliance();
             return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
         },
-        drivetrain, elevatorSubsystem, climbSusbsystem //,cameraSubsystem
+        drivetrain, climbSusbsystem, cameraSubsystem//, elevatorSubsystem
         );
 
         configureBindings();
@@ -144,27 +144,34 @@ public class RobotContainer {
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
         //BUTTONS!!!!!!!!!!!!!
         //Camera
-        //new Trigger(opJoystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        new Trigger(joystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
         
         //Climb
-        new Trigger(joystick.a()).whileTrue(new ClimbCommand(climbSusbsystem, climbSpeed));
-        new Trigger(joystick.b()).whileTrue(new ClimbCommand(climbSusbsystem, -climbSpeed));
+        new Trigger(joystick.button(5)).whileTrue(new ClimbCommand(climbSusbsystem, climbSpeed));
+        new Trigger(joystick.button(6)).whileTrue(new ClimbCommand(climbSusbsystem, -climbSpeed));
 
         //Elevator
+        /*
         //With OP controll
-        
-        new Trigger(opJoystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos1, intakeRotatePos1, intakeOff)));
+        //Starting Config
+        new Trigger(opJoystick.y().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos1, intakeRotatePos1, -intakeOn)));
+        //L1/L2??
         new Trigger(opJoystick.x().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos2, intakeRotatePos2, intakeOn)));
-        new Trigger(opJoystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos3, intakeOn)));
-        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos4, intakeRotatePos4, intakeOn)));
-        //new Trigger(opJoystick.a().onTrue(new IntakeCommand(elevatorSubsystem, intakeRotatespeed, intakeOn)));
+        //L2/L3??
+        new Trigger(opJoystick.button(6).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos3, intakeRotatePos2, intakeOn)));
+        //L3/L4??
+        new Trigger(opJoystick.button(5).onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos4, intakeRotatePos2, intakeOn)));
+        //Intake game peice
+        new Trigger(opJoystick.a().onTrue(new ElevatorCommad(elevatorSubsystem, elevatorSpeed, elevatorPos5, intakePos, -intakeOn)));
 
+        //new Trigger(opJoystick.b()).onTrue(new IntakeCommand(elevatorSubsystem, elevatorSpeed, intakeOn));
+        */
 
         //With Driver controll
         /*
@@ -181,12 +188,10 @@ public class RobotContainer {
         autoChooser = new SendableChooser<>();
 
         // Add a default auto selection
-        autoChooser.setDefaultOption("New Auto", new PathPlannerAuto("New Auto"));
+        autoChooser.setDefaultOption("test Auto", new PathPlannerAuto("test Auto"));
         
-        // Manually add a specific path
-        autoChooser.addOption("test Auto", new PathPlannerAuto("test Auto"));
+        autoChooser.addOption("New Auto", new PathPlannerAuto("New Auto"));
 
-        // Optionally add more paths
         autoChooser.addOption("Comp Auto", new PathPlannerAuto("comp Auto"));
         
         SmartDashboard.putData("Auto Chooser", autoChooser);

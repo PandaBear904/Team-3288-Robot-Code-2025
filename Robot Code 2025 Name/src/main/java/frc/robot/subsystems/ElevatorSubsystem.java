@@ -29,10 +29,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private double currentPosition;
     private double elevatorCurrentPosition;
-    private double cPos;
-    private int pos;
 
-    private final double offset = 6; 
+    private final double offset = 10;
 
 
     public ElevatorSubsystem(){
@@ -51,7 +49,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Encoder", elevatorCurrentPosition);
         SmartDashboard.putNumber("Through Bore Encoder", currentPosition);
         SmartDashboard.putNumber("Elevator Target Position", targetPosition);
-        SmartDashboard.putNumber("Elevator Position", pos);
         SmartDashboard.putNumber("Through Bore", throughBore.get());
         SmartDashboard.putNumber("intakeOn Encoder", intakeOnEncoder.getPosition());
         SmartDashboard.putNumber("intakeRotate Encoder", intakeRotateEncoder.getPosition());
@@ -65,7 +62,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void goToPosition(double speed, double desiredPos, double rotatePos, double onPos){
         double currentPos = throughBore.get();
-        cPos = currentPos;
         if (Math.abs(currentPos - desiredPos) > offset) { // Add a tolerance
             if (desiredPos > currentPos) {
                 elevator.set(speed);
@@ -74,27 +70,15 @@ public class ElevatorSubsystem extends SubsystemBase {
             }
         } else {
             elevator.set(0); // Stop the motor once position is reached
-            pos();
             intakeRotate(speed, rotatePos, onPos);
         }
     }
 
-    public void pos(){
-        //Finds what position the elevator is in
-        if (Math.abs(cPos - 250) <= offset) {
-            pos = 1;
-        } else if (Math.abs(cPos - 150) <= offset){
-            pos = 2;
-        } else {
-            pos = 3;
-        }
-    }
     
     public void intakeRotate(double speed, double rotatePos, double onPos){
-        speed = 0.1;
+        speed = 0.4;
         double currentPos = intakeRotateEncoder.getPosition();
-        cPos = currentPos;
-        if (Math.abs(currentPos - rotatePos) > offset) { 
+        if (Math.abs(currentPos - rotatePos) > 1) { 
             if (rotatePos > currentPos) {
                 intakeRotate.set(speed);
             } else {
@@ -107,10 +91,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void intakeOn(double speed, double onPos){
-        speed = 0.3;
+        speed = 0.5;
         double currentPos = intakeOnEncoder.getPosition();
-        cPos = currentPos;
-        if (Math.abs(currentPos - onPos) > offset) { 
+        if (Math.abs(currentPos - onPos) > 10) { 
             if (onPos > currentPos) {
                 intakeOn.set(speed);
             } else {
