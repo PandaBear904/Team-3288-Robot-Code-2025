@@ -24,12 +24,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 //Imports for subsystem/commands
-import frc.robot.commands.ElevatorCommad;
-import frc.robot.commands.SwitchCameraCommand;
-import frc.robot.subsystems.CameraSubsystem;
-import frc.robot.commands.IntakeCommand;
+//import frc.robot.commands.ElevatorCommad;
+//import frc.robot.commands.SwitchCameraCommand;
+//import frc.robot.subsystems.CameraSubsystem;
+//import frc.robot.commands.IntakeCommand;
 import frc.robot.subsystems.ClimbSusbsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+//import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.commands.ClimbCommand;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -52,14 +52,15 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-    private final CommandXboxController opJoystick = new CommandXboxController(1);
+    //private final CommandXboxController opJoystick = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     //Subsystems
-    private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+    //private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
     //private final ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     private final ClimbSusbsystem climbSusbsystem = new ClimbSusbsystem();
+    /*
 
     //Speeds
     private double elevatorSpeed = 1;
@@ -80,9 +81,9 @@ public class RobotContainer {
     private double intakeRotatePos1 = 3;
     private double intakeRotatePos2 = 55;
     private int intakePos = 50;
-
+    */
     //Climb
-    private double climbSpeed = 0.7;
+    private double climbSpeed = 1;
 
     boolean isCompetition = true;
 
@@ -109,10 +110,10 @@ public class RobotContainer {
         ),
         config,
         () -> {
-            var alliance = DriverStation.getAlliance();
-            return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+            var alliance =  DriverStation.Alliance.Red;//DriverStation.getAlliance();
+            return true;//alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
         },
-        drivetrain, climbSusbsystem, cameraSubsystem//, elevatorSubsystem
+        drivetrain, climbSusbsystem//, cameraSubsystem//, elevatorSubsystem
         );
 
         configureBindings();
@@ -125,8 +126,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -150,7 +151,7 @@ public class RobotContainer {
 
         //BUTTONS!!!!!!!!!!!!!
         //Camera
-        new Trigger(joystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
+        //new Trigger(joystick.b().onTrue(new SwitchCameraCommand(cameraSubsystem)));
         
         //Climb
         new Trigger(joystick.button(5)).whileTrue(new ClimbCommand(climbSusbsystem, climbSpeed));
@@ -188,11 +189,9 @@ public class RobotContainer {
         autoChooser = new SendableChooser<>();
 
         // Add a default auto selection
-        autoChooser.setDefaultOption("test Auto", new PathPlannerAuto("test Auto"));
+        autoChooser.setDefaultOption("Test Auto", new PathPlannerAuto("test Auto"));
         
-        autoChooser.addOption("New Auto", new PathPlannerAuto("New Auto"));
-
-        autoChooser.addOption("Comp Auto", new PathPlannerAuto("comp Auto"));
+        autoChooser.addOption("No Auto", new PathPlannerAuto("No Auto"));
         
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }

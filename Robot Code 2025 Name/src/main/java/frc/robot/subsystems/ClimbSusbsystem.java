@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkFlex;
 
 public class ClimbSusbsystem extends SubsystemBase {
-    private SparkMax climb = new SparkMax(13, SparkMax.MotorType.kBrushed);
+    private SparkFlex climb = new SparkFlex(10, SparkFlex.MotorType.kBrushless);
 
     private double sec = 0;
 

@@ -16,9 +16,9 @@ public class CameraSubsystem extends SubsystemBase{
     public CameraSubsystem() {
         camera1 = CameraServer.startAutomaticCapture(0);
         camera2 = CameraServer.startAutomaticCapture(1);
-        camera1.setResolution(64, 64);
+        camera1.setResolution(32, 32);
         camera2.setResolution(64, 64);
-        camera1.setFPS(15);
+        camera1.setFPS(10);
         camera2.setFPS(15);
         cameraServer = CameraServer.getServer();
         cameraServer.setSource(camera1);

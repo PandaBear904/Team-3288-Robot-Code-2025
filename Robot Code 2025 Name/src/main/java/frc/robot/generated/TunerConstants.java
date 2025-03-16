@@ -131,7 +131,7 @@ public class TunerConstants {
     private static final int kFrontLeftDriveMotorId = 50;
     private static final int kFrontLeftSteerMotorId = 51;
     private static final int kFrontLeftEncoderId = 52;
-    private static final Angle kFrontLeftEncoderOffset = Rotations.of(0.427001953125);
+    private static final Angle kFrontLeftEncoderOffset = Rotations.of(-0.212646484375);
     private static final boolean kFrontLeftSteerMotorInverted = false;
     private static final boolean kFrontLeftEncoderInverted = false;
 
@@ -139,10 +139,10 @@ public class TunerConstants {
     private static final Distance kFrontLeftYPos = Inches.of(9.5);
 
     // Front Right
-    private static final int kFrontRightDriveMotorId = 30;
+    private static final int kFrontRightDriveMotorId = 41;
     private static final int kFrontRightSteerMotorId = 31;
     private static final int kFrontRightEncoderId = 32;
-    private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.02392578125);
+    private static final Angle kFrontRightEncoderOffset = Rotations.of(-0.123046875);
     private static final boolean kFrontRightSteerMotorInverted = false;
     private static final boolean kFrontRightEncoderInverted = false;
 
@@ -151,9 +151,9 @@ public class TunerConstants {
 
     // Back Left
     private static final int kBackLeftDriveMotorId = 40;
-    private static final int kBackLeftSteerMotorId = 41;
+    private static final int kBackLeftSteerMotorId = 13;
     private static final int kBackLeftEncoderId = 42;
-    private static final Angle kBackLeftEncoderOffset = Rotations.of(0.10107421875);
+    private static final Angle kBackLeftEncoderOffset = Rotations.of(-0.1875);
     private static final boolean kBackLeftSteerMotorInverted = false;
     private static final boolean kBackLeftEncoderInverted = false;
 
@@ -164,7 +164,7 @@ public class TunerConstants {
     private static final int kBackRightDriveMotorId = 60;
     private static final int kBackRightSteerMotorId = 61;
     private static final int kBackRightEncoderId = 62;
-    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.18408203125);
+    private static final Angle kBackRightEncoderOffset = Rotations.of(-0.1572265625);
     private static final boolean kBackRightSteerMotorInverted = false;
     private static final boolean kBackRightEncoderInverted = false;
 
@@ -285,23 +285,24 @@ public class TunerConstants {
             );
         }
 
-    public Pose2d getPose() {
-        return getState().Pose; // Use CTRE’s built-in pose tracking
-        }
-
-    public void resetOdometry(Pose2d pose) {
-        super.resetPose(pose); // Reset odometry using CTRE method
-        }
-
-    public ChassisSpeeds getChassisSpeeds() {
-        return getState().Speeds; // Retrieve speeds from CTRE's swerve state
-        }   
-
-    public void drive(ChassisSpeeds speeds) {
-        setControl(new SwerveRequest.FieldCentric()
-            .withVelocityX(speeds.vxMetersPerSecond)
-                .withVelocityY(speeds.vyMetersPerSecond)
-            .withRotationalRate(speeds.omegaRadiansPerSecond));
+        public Pose2d getPose() {
+            return getState().Pose; // Use CTRE’s built-in pose tracking
+            }
+    
+        public void resetOdometry(Pose2d pose) {
+            super.resetPose(pose); // Reset odometry using CTRE method
+            }
+    
+        public ChassisSpeeds getChassisSpeeds() {
+            return getState().Speeds; // Retrieve speeds from CTRE's swerve state
+            }   
+    
+        public void drive(ChassisSpeeds speeds) {
+            setControl(new SwerveRequest.FieldCentric()
+                .withVelocityX(speeds.vxMetersPerSecond)
+                    .withVelocityY(speeds.vyMetersPerSecond)
+                .withRotationalRate(speeds.omegaRadiansPerSecond));
+            }
         }
     }
-}
+    
