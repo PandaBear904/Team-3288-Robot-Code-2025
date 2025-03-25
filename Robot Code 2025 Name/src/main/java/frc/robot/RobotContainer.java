@@ -4,26 +4,30 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.ClimbCommand;
-import frc.robot.subsystems.ClimbSusbsystem;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.ClimbSusbsystem;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class RobotContainer {
@@ -42,11 +46,12 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandJoystick joystick = new CommandJoystick(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     private final ClimbSusbsystem climbSusbsystem = new ClimbSusbsystem();
     private double climbSpeed = 1;
+    
 
     public RobotContainer() {
         
@@ -77,7 +82,7 @@ public class RobotContainer {
             }
             return false;
           },
-        drivetrain, climbSusbsystem//, cameraSubsystem//, elevatorSubsystem
+        drivetrain, climbSusbsystem
         );
 
         configureBindings();
@@ -88,33 +93,33 @@ public class RobotContainer {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-joystick.getY() * MaxSpeed)
+                     .withVelocityY(-joystick.getX() * MaxSpeed)
+                     .withRotationalRate(-joystick.getTwist() * MaxAngularRate)
             )
         );
+        
+        joystick.button(1).whileTrue(drivetrain.applyRequest(() -> brake)); // Trigger for brake
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
+        joystick.button(2).whileTrue(drivetrain.applyRequest(() ->
+            point.withModuleDirection(new Rotation2d(-joystick.getY(), -joystick.getX()))
         ));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        joystick.button(7).and(joystick.button(4)).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        joystick.button(7).and(joystick.button(3)).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        joystick.button(8).and(joystick.button(4)).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        joystick.button(8).and(joystick.button(3)).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.button(5).onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-                //Climb
-                new Trigger(joystick.button(5)).whileTrue(new ClimbCommand(climbSusbsystem, climbSpeed));
-                new Trigger(joystick.button(6)).whileTrue(new ClimbCommand(climbSusbsystem, -climbSpeed));
+        //Climb
+        new Trigger(joystick.button(5)).whileTrue(new ClimbCommand(climbSusbsystem, climbSpeed));
+        new Trigger(joystick.button(6)).whileTrue(new ClimbCommand(climbSusbsystem, -climbSpeed));
     }
     
 
@@ -122,7 +127,16 @@ public class RobotContainer {
             autoChooser = new SendableChooser<>();
     
             // Add a default auto selection
-            autoChooser.setDefaultOption("Test Auto", new PathPlannerAuto("test Auto"));
+            Command path = new PathPlannerAuto("test Auto");
+            Command climb = new ClimbCommand(climbSusbsystem, -1.0).withTimeout(4);
+            Command negativeClimb = new ClimbCommand(climbSusbsystem, 1.0).withTimeout(3);
+
+            autoChooser.setDefaultOption("Test Auto", new SequentialCommandGroup(
+                drivetrain.runOnce(() -> drivetrain.seedFieldCentric()), // Optional: reset heading
+                //path,   // follow the path
+                climb,     // Then activate the climb
+                negativeClimb
+                ));
             
             autoChooser.addOption("No Auto", new PathPlannerAuto("No Auto"));
             
