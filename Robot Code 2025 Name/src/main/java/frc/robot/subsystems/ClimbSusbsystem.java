@@ -7,7 +7,7 @@ import com.revrobotics.spark.SparkFlex;
 
 public class ClimbSusbsystem extends SubsystemBase {
     private SparkFlex climb = new SparkFlex(10, SparkFlex.MotorType.kBrushless);
-    private DigitalInput limitSwitch = new DigitalInput(9   );
+    private DigitalInput limitSwitch = new DigitalInput(9);
 
     public ClimbSusbsystem(){
         climb.setInverted(false);
@@ -15,6 +15,7 @@ public class ClimbSusbsystem extends SubsystemBase {
     }
 
     public void climbOn(double speed){
+        //Get rid of if limit switch is gone
         if (speed > 0){
             if (limitSwitch.get()){
                 climb.set(0);
@@ -24,6 +25,8 @@ public class ClimbSusbsystem extends SubsystemBase {
         }else if(speed < 0){
             climb.set(speed);
         }
+        //without limit switch
+        //climb.set(speed);
     }
     
     public void stopClimb(){
